@@ -1,21 +1,32 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { nanoid } from 'nanoid';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import actions from '../../redux/contacts-actions';
+import { getContacts } from '../../redux/contacts-selectors';
+
 import s from './ContactForm.module.css';
 
-export default function ContactForm({onSubmit}) {
+
+export default function ContactForm() {
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
 
-    const nameInputId = nanoid();
+    const contacts = useSelector(getContacts);
+    const dispatch = useDispatch();
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        onSubmit(name, number);
+        const includeName = contacts.find(contact => contact.name === name);
+        (includeName !== undefined) ?
+        (toast.error(`${name} is already in contacts`)
+        ) :
+            dispatch(actions.addContact(name, number));
+
         setName('');
         setNumber('');
     };
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -42,7 +53,6 @@ export default function ContactForm({onSubmit}) {
                     title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
                     required
                        onChange={handleChange}
-                       id={nameInputId}
                        value={name}
                 />
             </label>
@@ -65,10 +75,6 @@ export default function ContactForm({onSubmit}) {
     )
 
 }
-
-ContactForm.propTypes = {
-        onSubmit: PropTypes.func.isRequired,
-    };
 
 
 

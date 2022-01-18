@@ -1,7 +1,14 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import { getFilter } from '../../redux/contacts-selectors';
+import actions from '../../redux/contacts-actions';
+
 import s from './SearchFilter.module.css';
 
-const SearchFilter = ({value, onChange}) => {
+
+const SearchFilter = () => {
+    const value = useSelector(getFilter);
+    const dispatch = useDispatch();
+
     return (
             <label className={s.label}> Find contacts by name
             <input
@@ -11,14 +18,12 @@ const SearchFilter = ({value, onChange}) => {
                 value={value}
                 autoComplete="off"
                 placeholder="Search contact"
-                onChange={onChange}
+                onChange={(e)=>dispatch(actions.updateFilter(e.target.value))}
             />
             </label>
         );
 }
-export default SearchFilter
+export default SearchFilter;
 
-SearchFilter.propTypes = {
-    value: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-}
+
+
